@@ -18,6 +18,110 @@ body {
   background-color: #171a1b;
 }
 
+.modal {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  background: rgba(94, 100, 104, 0.5);
+}
+
+.modal-body {
+  width: 750px;
+  height: 1000px;
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  -webkit-animation: slideDown-half 1.75s ease-in-out forwards;
+          animation: slideDown-half 1.75s ease-in-out forwards;
+  border: 1px solid #e9e6e3;
+  background: #171a1b;
+}
+
+@-webkit-keyframes slideDown-half {
+  from {
+    top: -50%;
+  }
+  to {
+    top: 50%;
+  }
+}
+
+@keyframes slideDown-half {
+  from {
+    top: -50%;
+  }
+  to {
+    top: 50%;
+  }
+}
+
+.pop {
+  -webkit-animation: expandAnimation 0.125s;
+          animation: expandAnimation 0.125s;
+}
+
+@-webkit-keyframes expandAnimation {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(1.25);
+            transform: scale(1.25);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+
+@keyframes expandAnimation {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(1.25);
+            transform: scale(1.25);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+
+.flip {
+  -webkit-animation: flipAnimation 0.75s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+          animation: flipAnimation 0.75s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+}
+
+@-webkit-keyframes flipAnimation {
+  0% {
+    -webkit-transform: rotateY(0);
+            transform: rotateY(0);
+  }
+  100% {
+    -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
+  }
+}
+
+@keyframes flipAnimation {
+  0% {
+    -webkit-transform: rotateY(0);
+            transform: rotateY(0);
+  }
+  100% {
+    -webkit-transform: rotateY(180deg);
+            transform: rotateY(180deg);
+  }
+}
+
 .game-container {
   width: 80%;
   display: -webkit-box;
@@ -82,6 +186,6 @@ body {
   font-size: 40px;
   font-weight: bold;
   color: white;
-  border: 2px solid #e9e6e3;
+  border: 1px solid #e9e6e3;
 }
 /*# sourceMappingURL=style.css.map */

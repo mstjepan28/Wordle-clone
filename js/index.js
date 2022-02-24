@@ -30,6 +30,17 @@ function startNewSession(){
 function terminateSession(){
     clearInterval(countDownInterval);
 
+    console.log("game over")
+
+    curSession.sessionTerminated = 1;
+    localStorage.setItem("sessionTerminated", 1)
+}
+
+function wordGuessed(){
+    clearInterval(countDownInterval);
+
+    console.log("word guessed")
+
     curSession.sessionTerminated = 1;
     localStorage.setItem("sessionTerminated", 1)
 }
@@ -54,14 +65,24 @@ function startCountdown(countdownTime){
 }
 
 function showPreviousInputs(){
-    console.log(curSession);
-    [...curSession.guessList, curSession.curGuess].forEach((guess, guessIndex) => {
+    curSession.guessList.forEach((guess, guessIndex) => {
         const letterGuesses = getGuessDomElement(guessIndex + 1).children;
 
-        guess.forEach((letter, letterIndex) => {
-            [...letterGuesses][letterIndex].innerText = letter.toUpperCase();
+        guess.guess.forEach((letter, letterIndex) => {
+            childElement = [...letterGuesses][letterIndex];
+
+            childElement.innerText = letter.toUpperCase();
+            childElement.style.background = guess.score[letterIndex];
+            childElement.style.border = `1px solid ${guess.score[letterIndex]}`;
         })
     });
+
+    const curLetterGuess = getGuessDomElement(false).children
+
+    curSession.curGuess.forEach((letter, letterIndex) => {
+        childElement = [...curLetterGuess][letterIndex];
+        childElement.innerText = letter.toUpperCase();
+    })
 }
 
 function loadSession(){
@@ -92,12 +113,52 @@ function getGuessDomElement(guessIndex){
     return document.querySelector(`div.${className}`);
 }
 
+function scoreInput(){
+    const score = [];
+
+    curSession.curGuess.forEach((letter, index) => {
+        if(curSession.word[index] == letter) 
+            score.push("#577F45");
+        else if(curSession.word.indexOf(letter) != -1)
+            score.push("#c9b458");
+        else
+            score.push("#5e6468");
+    })
+
+    return {
+        guess: curSession.curGuess, 
+        score: score
+    };
+}
+
+function displayScore(score){
+    const letterGuesses = getGuessDomElement(false).children;
+
+    score.guess.forEach((letter, letterIndex) => {
+        setTimeout(() => {
+            childElement = [...letterGuesses][letterIndex];
+    
+            childElement.innerText = letter.toUpperCase();
+            childElement.style.background = score.score[letterIndex];
+            childElement.style.border = `1px solid ${score.score[letterIndex]}`;
+    
+            childElement.classList.remove("pop");
+            childElement.classList.add("flip");
+        }, 500 * letterIndex)
+    })
+}
+
 function addNewKey(newKey){
     if(curSession.curGuess.length >= 5) return;
     curSession.curGuess.push(newKey);
 
+    //document.getElementById("resultModal").style.opacity = "1";
+
     const letterGuesses = getGuessDomElement(false).children;
-    [...letterGuesses][curSession.curGuess.length - 1].innerText = newKey.toUpperCase();
+    const childElement = [...letterGuesses][curSession.curGuess.length - 1];
+
+    childElement.innerText = newKey.toUpperCase();
+    childElement.classList.add("pop")
 
     updateLocalStorage();
 }
@@ -105,8 +166,11 @@ function addNewKey(newKey){
 function deleteLastInput(){
     if(curSession.curGuess.length == 0) return;
 
-    const letterGuesses = getGuessDomElement().children;
-    [...letterGuesses][curSession.curGuess.length - 1].innerText = "";
+    const letterGuesses = getGuessDomElement(false).children;
+    const childElement = [...letterGuesses][curSession.curGuess.length - 1];
+
+    childElement.innerText = "";
+    childElement.classList.remove("pop")
 
     curSession.curGuess.pop();
 
@@ -116,15 +180,22 @@ function deleteLastInput(){
 function validateInput(){
     if(curSession.curGuess.length != 5) return;
 
-    const guessedWord = curSession.curGuess.join("");
-    const indexInWordList = wordList.indexOf(guessedWord);
+    const wordIndex = wordList.indexOf(curSession.curGuess.join(""));
+    if(wordIndex == -1) return console.log("word not in word list");
 
-    if(indexInWordList == -1) return console.log("Word no in word list!");
-    
-    curSession.guessList.push(curSession.curGuess)
+    const score = scoreInput();
+    displayScore(score);
+
+    if(curSession.word == curSession.curGuess.join("")) 
+        return wordGuessed();
+
+    curSession.guessList.push(score)
     curSession.curGuess = []
 
     updateLocalStorage();
+
+    if(curSession.guessList.length >= 5) 
+        terminateSession(); 
 }
 
 function updateLocalStorage(){
