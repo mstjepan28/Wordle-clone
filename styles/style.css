@@ -22,42 +22,57 @@ body {
   width: 100vw;
   height: 100vh;
   position: absolute;
-  top: 0;
-  left: 0;
+  z-index: 10;
   opacity: 0;
   background: rgba(94, 100, 104, 0.5);
 }
 
-.modal-body {
-  width: 750px;
-  height: 1000px;
+.modal .modal-body {
+  width: 75%;
+  min-width: 400px;
+  max-width: 750px;
+  min-height: 250px;
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  row-gap: 3rem;
+  padding: 2rem 0;
   position: absolute;
-  top: -50%;
+  top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
-  -webkit-animation: slideDown-half 1.75s ease-in-out forwards;
-          animation: slideDown-half 1.75s ease-in-out forwards;
   border: 1px solid #e9e6e3;
   background: #171a1b;
 }
 
-@-webkit-keyframes slideDown-half {
-  from {
-    top: -50%;
-  }
-  to {
-    top: 50%;
-  }
+.modal .modal-body .playAgainButton {
+  margin-top: 1.5rem;
+  padding: 0 1rem 0.25rem 1rem;
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
-@keyframes slideDown-half {
-  from {
-    top: -50%;
-  }
-  to {
-    top: 50%;
-  }
+.modal .modal-body .playAgainButton:focus, .modal .modal-body .playAgainButton:hover {
+  border-bottom: 1px solid white;
+  outline: none;
 }
 
 .pop {
@@ -95,30 +110,38 @@ body {
   }
 }
 
-.flip {
-  -webkit-animation: flipAnimation 0.75s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
-          animation: flipAnimation 0.75s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+.revealLetter {
+  -webkit-animation: revealLetterAnimation 0.75s cubic-bezier(0.01, 1.36, 0.77, 0.69) both;
+          animation: revealLetterAnimation 0.75s cubic-bezier(0.01, 1.36, 0.77, 0.69) both;
 }
 
-@-webkit-keyframes flipAnimation {
+@-webkit-keyframes revealLetterAnimation {
   0% {
-    -webkit-transform: rotateY(0);
-            transform: rotateY(0);
+    -webkit-transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1);
+  }
+  50% {
+    -webkit-transform: translateY(-1rem) scale(1.1);
+            transform: translateY(-1rem) scale(1.1);
   }
   100% {
-    -webkit-transform: rotateY(180deg);
-            transform: rotateY(180deg);
+    -webkit-transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1);
   }
 }
 
-@keyframes flipAnimation {
+@keyframes revealLetterAnimation {
   0% {
-    -webkit-transform: rotateY(0);
-            transform: rotateY(0);
+    -webkit-transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1);
+  }
+  50% {
+    -webkit-transform: translateY(-1rem) scale(1.1);
+            transform: translateY(-1rem) scale(1.1);
   }
   100% {
-    -webkit-transform: rotateY(180deg);
-            transform: rotateY(180deg);
+    -webkit-transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1);
   }
 }
 

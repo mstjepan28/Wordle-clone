@@ -1,8 +1,23 @@
-let curSession = {}
+let curSession = {word: "humor"};
+let coolDown = false;
+
+let countdownTime = 0;
 let countDownInterval = null;
+const timeAllowed = 1000 * 60 * 60;
+
 
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+
+function formatTimeElapsed(timeElapsed){
+    let minutes = Math.floor(timeElapsed / 60) + "";
+    let seconds = Math.floor(timeElapsed % 60) + "";
+
+    minutes = minutes.split("").length == 1? `0${minutes}`: minutes;
+    seconds = seconds.split("").length == 1? `0${seconds}`: seconds;
+
+    return `${minutes}:${seconds}`
+}
 
 function getRandomWord(){
     const randIndex = randInt(0, wordList.length - 1);
@@ -21,46 +36,38 @@ function getRandomWord(){
 }
 
 function startNewSession(){
-    console.log("Starting new session")
+    document.getElementById("resultModal").style.opacity = "0";
 
     getRandomWord();
-    loadSession();
+    location.reload();
 }
 
-function terminateSession(){
+function terminateSession(isWordGuessed, customMessage){
     clearInterval(countDownInterval);
 
-    console.log("game over")
+    const timePassed = (timeAllowed / 1000) - countdownTime
 
+    const gameOutcome = customMessage? customMessage: isWordGuessed? "You got it!": "Game over";
+    const gameResult = isWordGuessed? `Your time: ${formatTimeElapsed(timePassed)}`: `The word was: ${curSession.word.toUpperCase()}`;
+
+    document.getElementById("game-outcome").innerText = gameOutcome;
+    document.getElementById("game-result").innerText = gameResult;
+    document.getElementById("resultModal").style.opacity = "1";
+    
     curSession.sessionTerminated = 1;
-    localStorage.setItem("sessionTerminated", 1)
+    updateLocalStorage();
 }
 
-function wordGuessed(){
-    clearInterval(countDownInterval);
-
-    console.log("word guessed")
-
-    curSession.sessionTerminated = 1;
-    localStorage.setItem("sessionTerminated", 1)
-}
-
-function startCountdown(countdownTime){
+function startCountdown(timeLeft){
     const countDown = document.getElementById("countdown");
-    countdownTime = Math.ceil(countdownTime / 1000)
+    countdownTime = Math.ceil(timeLeft / 1000)
     
     countDownInterval = setInterval(() => {
         countdownTime -= 1;
 
-        let minutes = Math.floor(countdownTime / 60) + "";
-        let seconds = Math.floor(countdownTime % 60) + "";
+        countDown.innerText = formatTimeElapsed(countdownTime);
 
-        minutes = minutes.split("").length == 1? `0${minutes}`: minutes;
-        seconds = seconds.split("").length == 1? `0${seconds}`: seconds;
-
-        countDown.innerText = `${minutes}:${seconds}`
-
-        if(countDown == 0) terminateSession();
+        if(countDown == 0) terminateSession(false, "Game over - time ran out");
     }, 1000)
 }
 
@@ -86,17 +93,18 @@ function showPreviousInputs(){
 }
 
 function loadSession(){
-    if(localStorage.getItem("sessionTerminated") == 1) return startNewSession();
-
     curSession = JSON.parse(localStorage.getItem("session"));
 
-    const timeDifference = Date.now() - (curSession?.startTime || 0);
-    const oneHour = 1000 * 60 * 60;
+    if(!curSession || curSession?.sessionTerminated == 1) 
+        return startNewSession();
 
-    if(timeDifference > oneHour) return startNewSession();
+    const timePassed = Date.now() - curSession.startTime;
+
+    if(timePassed > timeAllowed) 
+        return terminateSession(false, "Game over - time ran out");
 
     showPreviousInputs();
-    startCountdown(oneHour - timeDifference);
+    startCountdown(timeAllowed - timePassed);
 }
 
 function getGuessDomElement(guessIndex){
@@ -143,7 +151,7 @@ function displayScore(score){
             childElement.style.border = `1px solid ${score.score[letterIndex]}`;
     
             childElement.classList.remove("pop");
-            childElement.classList.add("flip");
+            childElement.classList.add("revealLetter");
         }, 500 * letterIndex)
     })
 }
@@ -151,8 +159,6 @@ function displayScore(score){
 function addNewKey(newKey){
     if(curSession.curGuess.length >= 5) return;
     curSession.curGuess.push(newKey);
-
-    //document.getElementById("resultModal").style.opacity = "1";
 
     const letterGuesses = getGuessDomElement(false).children;
     const childElement = [...letterGuesses][curSession.curGuess.length - 1];
@@ -178,6 +184,10 @@ function deleteLastInput(){
 }
 
 function validateInput(){
+    if(coolDown) return;
+    coolDown = true;
+    setTimeout(() => coolDown = false, 2500);
+
     if(curSession.curGuess.length != 5) return;
 
     const wordIndex = wordList.indexOf(curSession.curGuess.join(""));
@@ -187,7 +197,7 @@ function validateInput(){
     displayScore(score);
 
     if(curSession.word == curSession.curGuess.join("")) 
-        return wordGuessed();
+        return setTimeout(() => terminateSession(true, null), 2750)
 
     curSession.guessList.push(score)
     curSession.curGuess = []
@@ -195,7 +205,7 @@ function validateInput(){
     updateLocalStorage();
 
     if(curSession.guessList.length >= 5) 
-        terminateSession(); 
+        terminateSession(false, null); 
 }
 
 function updateLocalStorage(){
@@ -204,6 +214,8 @@ function updateLocalStorage(){
 }
 
 function keyPressHandler(event){
+    if(coolDown) return;
+
     const validKeys = "abcdefghijklmnopqrstuvwxyz";
     const isValidKey = validKeys.indexOf(event.key)
 
@@ -213,9 +225,12 @@ function keyPressHandler(event){
         Backspace: () => deleteLastInput(),
         Enter: () => validateInput(),
     }
-    keyHandler[event.key]?.();
+    keyHandler[event.key]?.();   
 }
 
-document.addEventListener("keydown", keyPressHandler)
+document.addEventListener("keydown", keyPressHandler);
+document.getElementById("playAgainButton").addEventListener("click", startNewSession);
 
 loadSession();
+
+//terminateSession(false, null);
