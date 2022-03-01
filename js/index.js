@@ -36,7 +36,7 @@ function getRandomWord(){
 }
 
 function startNewSession(){
-    document.getElementById("resultModal").style.opacity = "0";
+    document.getElementById("resultModal").style.display = "none";
 
     getRandomWord();
     location.reload();
@@ -52,7 +52,7 @@ function terminateSession(isWordGuessed, customMessage){
 
     document.getElementById("game-outcome").innerText = gameOutcome;
     document.getElementById("game-result").innerText = gameResult;
-    document.getElementById("resultModal").style.opacity = "1";
+    document.getElementById("resultModal").style.display = "initial";
     
     curSession.sessionTerminated = 1;
     updateLocalStorage();
@@ -183,6 +183,14 @@ function deleteLastInput(){
     updateLocalStorage();
 }
 
+function unknownWordHandler(){
+    console.log("word not in word list!");
+
+    coolDown = false;
+
+    return;
+}
+
 function validateInput(){
     if(coolDown) return;
     coolDown = true;
@@ -191,7 +199,7 @@ function validateInput(){
     if(curSession.curGuess.length != 5) return;
 
     const wordIndex = wordList.indexOf(curSession.curGuess.join(""));
-    if(wordIndex == -1) return console.log("word not in word list");
+    if(wordIndex == -1) return unknownWordHandler();
 
     const score = scoreInput();
     displayScore(score);
