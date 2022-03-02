@@ -9,8 +9,6 @@
 		</div>
 	</div>
 
-	
-
 	<div class="game-container">
 		<div></div>
 		<div id="countdown" class="game-countdown">Loading...</div>
@@ -492,6 +490,30 @@ export default {
 	.guess-letter{
 		width: 50px !important;
 		font-size: 30px !important;
+	}
+}
+@media only screen and (max-width: 650px) {
+	.guess-letter{
+		width: 50px !important;
+		font-size: 30px !important;
+	}
+}
+
+@media only screen and (max-height: 700px) {
+	.game-guesses{
+		margin: 2rem 0 !important;
+		gap: 0.75rem !important;
+
+		.guess-instance{
+			gap: 0.25rem !important;
+		}
+	}
+}
+
+@media only screen and (max-height: 600px) {
+	.game-guesses{
+		margin: 0.5rem !important;
+		gap: 0.75rem !important;
 	}
 }
 
