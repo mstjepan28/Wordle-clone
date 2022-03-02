@@ -1,63 +1,73 @@
 <template>
-  <div id="resultModal" class="modal">
-    <div id="modalBody" class="modal-body">
-      <h2 id="game-outcome"></h2>
-      <h3 id="game-result"></h3>
-      <button id="playAgainButton" class="playAgainButton" type="click">
-        Play Again
-      </button>
-    </div>
-  </div>
+	<div id="resultModal" class="modal">
+		<div id="modalBody" class="modal-body">
+			<h2 id="game-outcome"></h2>
+			<h3 id="game-result"></h3>
+			<button id="playAgainButton" class="playAgainButton" type="click">
+				Play Again
+			</button>
+		</div>
+	</div>
 
-  <div class="game-container">
-    <div id="countdown" class="game-countdown">Loading...</div>
+	
 
-    <div class="game-guesses">
-      <div class="guess-instance firstGuess">
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-      </div>
-      <div class="guess-instance secondsGuess">
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-      </div>
-      <div class="guess-instance thirdGuess">
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-      </div>
-      <div class="guess-instance fourthGuess">
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-      </div>
-      <div class="guess-instance fifthGuess">
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-        <div class="guess-letter"></div>
-      </div>
-    </div>
+	<div class="game-container">
+		<div></div>
+		<div id="countdown" class="game-countdown">Loading...</div>
 
-    <div class="game-keyboard"></div>
-  </div>
+		<div class="game-guesses">
+			<div class="guess-instance firstGuess">
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+			</div>
+			<div class="guess-instance secondsGuess">
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+			</div>
+			<div class="guess-instance thirdGuess">
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+			</div>
+			<div class="guess-instance fourthGuess">
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+			</div>
+			<div class="guess-instance fifthGuess">
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+				<div class="guess-letter"></div>
+			</div>
+		</div>
+
+		<OnScreenKeyBoard
+			:totalScores="totalScores"
+			@input="addNewKey"
+			@delete="deleteLastInput"
+			@validate="validateInput"
+		/>
+  	</div>
 </template>
 
 <script>
 import wordList from "./assets/wordList.js";
+import OnScreenKeyBoard from "./components/onScreenKeyBoard.vue"
 
 export default {
+	components: { OnScreenKeyBoard },
 	data() {
 		return{
 			curSession: {word: "humor"},
@@ -67,6 +77,8 @@ export default {
 			countDownInterval: null,
 			timeAllowed: 1000 * 60 * 60,
 			wordList: [],
+
+			totalScores: {}
 		}
 	},
 	methods: {
@@ -121,6 +133,9 @@ export default {
 
 			this.curSession.sessionTerminated = 1;
 			this.updateLocalStorage();
+
+			localStorage.removeItem("session");
+			localStorage.setItem("session", JSON.stringify(this.curSession));
 		},
 
 		startCountdown(timeLeft){
@@ -146,6 +161,8 @@ export default {
 					childElement.innerText = letter.toUpperCase();
 					childElement.style.background = guess.score[letterIndex];
 					childElement.style.border = `1px solid ${guess.score[letterIndex]}`;
+
+					this.totalScores[letter] = guess.score[letterIndex];
 				})
 			});
 
@@ -190,12 +207,16 @@ export default {
 			const score = [];
 
 			this.curSession.curGuess.forEach((letter, index) => {
+				let newScore = null;
+				
 				if(this.curSession.word[index] == letter)
-					score.push("#577F45");
+					newScore = "#577F45";
 				else if(this.curSession.word.indexOf(letter) != -1)
-					score.push("#c9b458");
+					newScore = "#c9b458"; 
 				else
-					score.push("#5e6468");
+					newScore = "#5e6468";
+
+				score.push(newScore);
 			})
 
 			return {
@@ -217,6 +238,8 @@ export default {
 
 					childElement.classList.remove("pop");
 					childElement.classList.add("revealLetter");
+
+					this.totalScores[letter] = score.score[letterIndex];
 				}, 500 * letterIndex)
 			})
 		},
@@ -282,7 +305,7 @@ export default {
 		},
 
 		updateLocalStorage(){
-			localStorage.clear();
+			localStorage.removeItem("session");
 			localStorage.setItem("session", JSON.stringify(this.curSession));
 		},
 
@@ -314,5 +337,162 @@ export default {
 
 <style lang="scss">
 @import "./styles/style.scss";
+
+#app{
+	width: 100%;
+	height: 100%;
+}
+
+.modal{
+    width: 100vw;
+    height: 100vh;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+
+    display: none;
+
+    background: rgba($gray, 0.5);
+    
+    .modal-body{
+        width: 75%;
+        min-width: 400px;
+        max-width: 750px;
+    
+        min-height: 250px;
+    
+        font-size: 36px;
+        font-weight: bold;
+        color: white;
+    
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        row-gap: 3rem;
+    
+        padding: 2rem 0;
+    
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    
+        border: 1px solid $white;
+        background: $gray-dark;
+
+		h2, h3{
+			text-align: center;
+		}
+    
+        .playAgainButton{
+            margin-top: 1.5rem;
+            padding: 0 1rem 0.25rem 1rem;
+    
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+    
+            cursor: pointer;
+            border: none;
+    
+            background: none;
+            &:focus, &:hover{
+                border-bottom: 1px solid white;
+                outline: none;
+            }
+        }
+    }
+}
+
+.pop{
+    animation: expandAnimation 0.125s;
+
+    @keyframes expandAnimation {
+        0%{
+            transform: scale(1);
+        }
+        50%{
+            transform: scale(1.25);
+        }    
+        100%{
+            transform: scale(1);
+        }    
+    }
+}
+
+.revealLetter{
+    animation: revealLetterAnimation 0.75s cubic-bezier(.01, 1.36, .77, .69) both;
+
+    @keyframes revealLetterAnimation {
+        0% {
+            transform: translateY(0) scale(1);
+        }
+        50% {
+            transform: translateY(-1rem) scale(1.1);
+        }
+        100% {
+            transform: translateY(0) scale(1);
+        }
+    }
+}
+
+.game-container{
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    .game-countdown{
+        margin: 0 auto;
+
+        font-size: 48px;
+        color: white;
+    }
+
+    .game-guesses{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        
+        gap: 1.5rem;
+		margin: 4rem 0;
+        
+        .guess-instance{
+            display: flex;
+            justify-content: space-between;
+
+            gap: 1rem;
+
+            .guess-letter{
+                --letterBox-size: 75px;
+				--letterBox-font: 40px;
+
+                width: 75px;
+                aspect-ratio: 1/1;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                font-size: 40px;
+                font-weight: bold;
+                color: white;
+    
+                border: 1px solid $white;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 650px) {
+	.guess-letter{
+		width: 50px !important;
+		font-size: 30px !important;
+	}
+}
 
 </style>
