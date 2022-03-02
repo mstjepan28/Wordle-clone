@@ -1,69 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <link rel="stylesheet" href="styles/style.css">
+	<meta charset="UTF-8" />
+	<link rel="icon" href="/favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Vite App</title>
 </head>
 <body>
-    <div id="resultModal" class="modal">
-        <div id="modalBody"class="modal-body">
-            <h2 id="game-outcome"></h2>
-            <h3 id="game-result"></h3>
-            <button id="playAgainButton" class="playAgainButton" type="click">Play Again</button>
-        </div>
-    </div>
-
-    <div class="game-container">
-        <div id="countdown" class="game-countdown">Loading...</div>
-
-        <div class="game-guesses">
-            <div class="guess-instance firstGuess">
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-            </div>
-            <div class="guess-instance secondsGuess">
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-            </div>
-            <div class="guess-instance thirdGuess">
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-            </div>
-            <div class="guess-instance fourthGuess">
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-            </div>
-            <div class="guess-instance fifthGuess">
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-                <div class="guess-letter"></div>
-            </div>
-        </div>
-
-        <div class="game-keyboard">
-            
-        </div>
-    </div>
-
-    <script defer src="./js/wordList.js"></script>
-    <script defer src="./js/index.js"></script>
+	<div id="app"></div>
+	<script type="module" src="/src/main.js"></script>
+	<style>
+		body{
+			width: 100vw;
+			height: 100vh;
+			
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			
+			background-color: #171a1b;
+		}
+	</style>
 </body>
 </html>
