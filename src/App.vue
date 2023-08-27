@@ -109,7 +109,8 @@ export default {
 			}
 
 			this.colorPalette = paletteColors || defaultPalette;
-			document.body.style.backgroundColor = this.colorPalette.background;
+			document.body.style.background = this.colorPalette.background;
+			document.body.style.backgroundSize = "contain"
 		},
 
 		randInt(min, max) {
@@ -160,7 +161,7 @@ export default {
 			document.getElementById("game-outcome").innerText = gameOutcome;
 			document.getElementById("game-result").innerText = gameResult;
 			document.getElementById("resultModal").style.display = "initial";
-			document.getElementById("resultModal").style.backgroundColor = isWordGuessed? this.colorPalette.correct: this.colorPalette.wrong;
+			document.getElementById("resultModal").style.background = isWordGuessed? this.colorPalette.correct: this.colorPalette.wrong;
 
 			this.curSession.sessionTerminated = 1;
 			this.updateLocalStorage();
